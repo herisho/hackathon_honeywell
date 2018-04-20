@@ -20,10 +20,10 @@ def escribir_serial(serial, data):
 
 
 def checkHour(date):
-    fed_morining_start = datetime(datetime.now().year, datetime.now().month, 8)
-    fed_morining_finish = datetime(datetime.now().year, datetime.now().month, 9)
-    fed_afternoon_start = datetime(datetime.now().year, datetime.now().month, 17)
-    fed_afternoon_finish = datetime(datetime.now().year, datetime.now().month, 18)
+    fed_morining_start = datetime(datetime.now().year, datetime.now().month, datetime.now().day, 15)
+    fed_morining_finish = datetime(datetime.now().year, datetime.now().month, datetime.now().day, 16)
+    fed_afternoon_start = datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17)
+    fed_afternoon_finish = datetime(datetime.now().year, datetime.now().month, datetime.now().day, 18)
 
     if (fed_morining_start < date < fed_morining_finish) or (fed_afternoon_start < date < fed_afternoon_finish):
         return True
@@ -33,30 +33,31 @@ def checkHour(date):
 
 
 def acceso(ser, db):
-    data = leer_serial(ser)
-    print(data)
-    if data == 'a':
-        tofb.Set_hist_Acceso(db, 'adentro')
-    if data == 'b':
-        tofb.Set_hist_Acceso(db, 'afuera')
+    if ser.inWaiting() == 1:
+        data = leer_serial(ser)
+        if data == 'a':
+            tofb.Set_hist_Acceso(db, 'Salio')
+        if data == 'b':
+            tofb.Set_hist_Acceso(db, 'Entro')
         
         
     
 def alimentacion(ser, db):
-    data = leer_serial(ser)
-    if data == 'c':
-        if checkHour():
-            if not fed:
+    if ser.inWaiting() > 0:
+        data = leer_serial(ser)
+        if data == 'c':
+            if checkHour(datetime.now()):
                 escribir_serial(ser, b'y/n/r')
-                print(var_hora())
                 fed = True
                 tofb.Set_hist_Alimentacion(db)
-        else:
-            print('No es hora')
-            escribir_serial(ser, b'n/n/r')
-            cont += 1
-            if cont > 10:
-                tofb.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
+                #tofb.sendNotification('Alimentacion', 'Tu mascota quiere comer')
+
+            else:
+                print('No es hora')
+                escribir_serial(ser, b'n/n/r')
+                #cont += 1
+                #if cont > 10:
+                 #   tofb.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
             
 def var_hora():
     return datetime.now().strftime("%Y-%m-%d_%H-%M")

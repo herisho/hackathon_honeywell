@@ -51,9 +51,11 @@ def Set_hist_Acceso(db,estado):
     tempHist=db.child("acceso/HistorialAcc").get()
     hora=petcense.var_hora()
     db.child("acceso").update({"HistorialAcc": tempHist.val()+"&"+str(hora)+"_"+estado})
+    db.child("acceso").update({"status":estado})
+
 
 def Set_hist_Alimentacion(db):
-    print("set history alimentacion")
+##    print("set history alimentacion")
     tempHist=db.child("Alimentacion/HistorialAl").get()
     hora=petcense.var_hora()
     db.child("Alimentacion").update({"HistorialAl": tempHist.val()+"&"+str(hora)})
