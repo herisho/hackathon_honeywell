@@ -32,21 +32,21 @@ def checkHour(date):
         return False
 
 
-def acceso():
-    data = leer_serial(puerta)
+def acceso(ser):
+    data = leer_serial(ser)
     if data == b'a/n/r':
         
     
-def alimentacion():
-    data = leer_serial(comida)
+def alimentacion(ser):
+    data = leer_serial(ser)
     if data == b'c/n/r':
         if checkHour():
             if not fed:
-                escribir_serial(comida, b'y/n/r')
+                escribir_serial(ser, b'y/n/r')
                 print(var_hora())
                 fed = True
         else:
-            escribir_serial(comida, b'n/n/r')
+            escribir_serial(ser, b'n/n/r')
             cont += 1
             if cont > 10:
                 algo.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
