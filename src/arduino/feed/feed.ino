@@ -3,7 +3,11 @@
 
 #define RST_PIN  9    //Pin 9 para el reset del RC522
 #define SS_PIN  10   //Pin 10 para el SS (SDA) del RC522
+
 MFRC522 mfrc522(SS_PIN, RST_PIN); ///Creamos el objeto para el RC522
+
+// Custom variables
+int wait_answer = 0;
 
 void setup() {
   Serial.begin(9600); //Iniciamos La comunicacion serial
@@ -31,22 +35,34 @@ void loop() {
                   } 
 //                  Serial.print("     ");                 
                   //comparamos los UID para determinar si es uno de nuestros usuarios  
-                  if(compareArray(ActualUID,Usuario1))
+                  if(compareArray(ActualUID,Usuario1)||compareArray(ActualUID,Usuario2)){
 //                    Serial.println("Acceso concedido...");
                     Serial.println('a');
-                  else if(compareArray(ActualUID,Usuario2))
-//                    Serial.println("Acceso concedido...");
-                    Serial.println('a');
-                  else
-                    Serial.println("Acceso denegado...");
-                  
+                    wait_answer = 1;
+                    
+                  }
+                  else{
+                    Serial.println('i');
+                  }
                   // Terminamos la lectura de la tarjeta tarjeta  actual
-                  mfrc522.PICC_HaltA();
+                  mfrc522.PICC_HaltA();                 
           
             }
-      
-  }
-  
+        }
+
+        while(wait_answer == 1){
+            if (Serial.available() > 0) {
+                    incomingByte = Serial.read();
+                    if(incomingByte=='y'){
+                      // Give Food
+                    } else if (incomingByte=='n'){
+                      // Nothing -> "Not yet doggie"
+                    } else{
+                      
+                    }
+                    wait_answer = 0;
+            }
+        }
 }
 
 //Función para comparar dos vectores

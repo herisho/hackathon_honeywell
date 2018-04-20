@@ -3,6 +3,8 @@
 
 #define RST_PIN  9    //Pin 9 para el reset del RC522
 #define SS_PIN  10   //Pin 10 para el SS (SDA) del RC522
+#define DELAY   100
+
 MFRC522 mfrc522(SS_PIN, RST_PIN); ///Creamos el objeto para el RC522
 
 void setup() {
@@ -38,12 +40,12 @@ void loop() {
 //                    Serial.println("Acceso concedido...");
                     Serial.println('a');
                   else
-                    Serial.println("Acceso denegado...");
+                    Serial.println('i');
                   
                   // Terminamos la lectura de la tarjeta tarjeta  actual
-                  mfrc522.PICC_HaltA();
-          
-            }
+                  mfrc522.PICC_HaltA();      
+                  delay(DELAY);    
+            }  
       
   }
   
