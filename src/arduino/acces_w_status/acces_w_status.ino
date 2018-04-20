@@ -14,34 +14,43 @@ Pins  SPI    UNO
 
 /*
  * Arduino Pins
- * Servo = 2
+ * Servo = 8
  * sensor afuera = 5
  * sensor adentro = 6
  */
- 
+
+
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Servo.h>
 
+
+
 #define RST_PIN  9    //Pin 9 para el reset del RC522
 #define SS_PIN  10   //Pin 10 para el SS (SDA) del RC522
+#define DELAY   100
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); ///Creamos el objeto para el RC522
 Servo servoMotor;
+
+// Custom variables
+int eval = 0;
+int s_afuera = 5;
+int s_adentro = 6;
 
 void setup() {
   Serial.begin(9600); //Iniciamos La comunicacion serial
   SPI.begin();        //Iniciamos el Bus SPI
   mfrc522.PCD_Init(); // Iniciamos el MFRC522
-  servoMotor.attach(2);
+  pinMode(s_afuera, INPUT);
+  pinMode(s_adentro, INPUT);
+  servoMotor.attach(8);
 //  Serial.println("Control de acceso:");
 }
 
 byte ActualUID[4]; //almacenará el código del Tag leído
 byte Usuario1[4]= {0x79, 0x65, 0xCB, 0x35} ; //código del usuario 1 79 65 CB 35
 byte Usuario2[4]= {0x45, 0x03, 0x00, 0xAB} ; //código del usuario 2
-int wait_answer = 0;
-int incomingByte = 0;
 void loop() {
   // Revisamos si hay nuevas tarjetas  presentes
   if ( mfrc522.PICC_IsNewCardPresent()) 
@@ -60,8 +69,8 @@ void loop() {
                   //comparamos los UID para determinar si es uno de nuestros usuarios  
                   if(compareArray(ActualUID,Usuario1)||compareArray(ActualUID,Usuario2)){
 //                    Serial.println("Acceso concedido...");
-                    Serial.println('c');
-                    wait_answer = 1;
+                    eval = 1;
+                    servoMotor.write(180);
                     
                   }
                   else{
@@ -72,21 +81,17 @@ void loop() {
           
             }
         }
-
-        while(wait_answer == 1){
-            if (Serial.available() > 0) {
-                    incomingByte = Serial.read();
-                    if(incomingByte=='y'){
-                      servoMotor.write(180);
-                      delay(3000);
-                      servoMotor.write(0);
-                    } else if (incomingByte=='n'){
-                      // Nothing -> "Not yet doggie"
-                    } else{
-                      
-                    }
-                    wait_answer = 0;
+        while(eval == 1){
+            if(digitalRead(s_adentro)){
+              Serial.print('a');  
+              servoMotor.write(0); 
+              eval = 0;                 
+            } else if(digitalRead(s_afuera)){
+              Serial.print('b');
+              eval = 0;
+              servoMotor.write(0);
             }
+            
         }
 }
 

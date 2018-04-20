@@ -1,16 +1,19 @@
 #include <SPI.h>
 #include <MFRC522.h>
+#include <Servo.h>
 
 #define RST_PIN  9    //Pin 9 para el reset del RC522
 #define SS_PIN  10   //Pin 10 para el SS (SDA) del RC522
 #define DELAY   100
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); ///Creamos el objeto para el RC522
+Servo servoMotor;
 
 void setup() {
   Serial.begin(9600); //Iniciamos La comunicacion serial
   SPI.begin();        //Iniciamos el Bus SPI
   mfrc522.PCD_Init(); // Iniciamos el MFRC522
+  servoMotor.attach(8);
 //  Serial.println("Control de acceso:");
 }
 
@@ -33,14 +36,22 @@ void loop() {
                   } 
 //                  Serial.print("     ");                 
                   //comparamos los UID para determinar si es uno de nuestros usuarios  
-                  if(compareArray(ActualUID,Usuario1))
+                  if(compareArray(ActualUID,Usuario1)){
 //                    Serial.println("Acceso concedido...");
-                    Serial.println('a');
-                  else if(compareArray(ActualUID,Usuario2))
+                    Serial.print('a');
+                    servoMotor.write(180);
+                      delay(3000);
+                      servoMotor.write(0);
+                  }
+                  else if(compareArray(ActualUID,Usuario2)){
 //                    Serial.println("Acceso concedido...");
-                    Serial.println('a');
+                    Serial.print('a');
+                    servoMotor.write(180);
+                      delay(3000);
+                      servoMotor.write(0);
+                  }
                   else
-                    Serial.println('i');
+                    Serial.print('i');
                   
                   // Terminamos la lectura de la tarjeta tarjeta  actual
                   mfrc522.PICC_HaltA();      
