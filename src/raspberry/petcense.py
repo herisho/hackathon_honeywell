@@ -3,7 +3,7 @@
 #Hackathon honeywell
 
 import serial
-import algo
+import tofb
 from datetime import datetime
 
 global fed
@@ -13,7 +13,7 @@ def setupSerial(portName):
     return serial.Serial(port= portName, baudrate= 9600)
 
 def leer_serial(serial):
-    return seral.readline()
+    return serial.read(1)
 
 def escribir_serial(serial, data):
     serial.write(data)
@@ -32,25 +32,32 @@ def checkHour(date):
         return False
 
 
-def acceso(ser):
+def acceso(ser, db):
     data = leer_serial(ser)
-    if data == b'a/n/r':
+    print(data)
+    if data == 'a':
+        tofb.Set_hist_Acceso(db, 'adentro')
+    if data == 'b':
+        tofb.Set_hist_Acceso(db, 'afuera')
+        
         
     
-def alimentacion(ser):
+def alimentacion(ser, db):
     data = leer_serial(ser)
-    if data == b'c/n/r':
+    if data == 'c':
         if checkHour():
             if not fed:
                 escribir_serial(ser, b'y/n/r')
                 print(var_hora())
                 fed = True
+                tofb.Set_hist_Alimentacion(db)
         else:
+            print('No es hora')
             escribir_serial(ser, b'n/n/r')
             cont += 1
             if cont > 10:
-                algo.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
+                tofb.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
             
 def var_hora():
-    return datetime.now()
+    return datetime.now().strftime("%Y-%m-%d_%H-%M")
 

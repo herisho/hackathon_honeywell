@@ -7,7 +7,7 @@ import datetime
 import socket
 import serial
 import petcense
-
+global db
 
 
 def get_ip_address():
@@ -45,26 +45,19 @@ def config_firebase():
 
     firebase = pyrebase.initialize_app(config)
     #Firebase Database Intialization
-    db = firebase.database()
-    print("{}".format(get_ip_address()))
-    my_stream = db.child("").stream(stream_handler)           
+    return firebase.database()        
 
-def Set_hist_Acceso():
+def Set_hist_Acceso(db,estado):
     tempHist=db.child("acceso/HistorialAcc").get()
-    db.child("acceso").update({"HistorialAcc": tempHist+"&"+var_hora()}
+    hora=petcense.var_hora()
+    db.child("acceso").update({"HistorialAcc": tempHist.val()+"&"+str(hora)+"_"+estado})
 
-def Set_hist_Alimentacion
+def Set_hist_Alimentacion(db):
+    print("set history alimentacion")
     tempHist=db.child("Alimentacion/HistorialAl").get()
-    db.child("Alimentacion").update({"HistorialAl": tempHist+"&"+var_hora()})
+    hora=petcense.var_hora()
+    db.child("Alimentacion").update({"HistorialAl": tempHist.val()+"&"+str(hora)})
 
-                              
- 
-        
-except KeyboardInterrupt:
-    my_stream.close()
-    ser.close()
-    
-    print("Everything Closed!")
 
 
 
