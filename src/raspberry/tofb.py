@@ -2,12 +2,11 @@
 import RPi.GPIO as GPIO
 import time
 import pyrebase
-import smbus
-import Adafruit_DHT
 import requests
 import datetime
 import socket
 import serial
+import petcense
 
 
 
@@ -50,29 +49,16 @@ def config_firebase():
     print("{}".format(get_ip_address()))
     my_stream = db.child("").stream(stream_handler)           
 
-try:
-    while(True):
-        
+def Set_hist_Acceso():
+    tempHist=db.child("acceso/HistorialAcc").get()
+    db.child("acceso").update({"HistorialAcc": tempHist+"&"+var_hora()}
 
-        if (ser.inWaiting() > 0):
-            rec = ser.read(ser.inWaiting())
-            print(rec)
-            data=rec.decode('utf-8')
+def Set_hist_Alimentacion
+    tempHist=db.child("Alimentacion/HistorialAl").get()
+    db.child("Alimentacion").update({"HistorialAl": tempHist+"&"+var_hora()})
 
-            
-            tempHist=db.child("Alimentacion/Historial").get()
-            db.child("Alimentacion").update({"Historial": tempHist+";"+var_hora()})
-
-            tempHist=db.child("acceso/Historial").get()
-            db.child("acceso").update({"Historial": tempHist+";"+var_hora()+","+estado}
-
-            
-            
-            if (b'sensor' in rec):
-                sendNotification("Detección de sensores!", "Precione para iniciar")
-
-            if (rec==b'L2\r\n'):
-                db.child("Luces").update({"luz2": '"true"'})
+                              
+ 
         
 except KeyboardInterrupt:
     my_stream.close()
