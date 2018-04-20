@@ -11,8 +11,7 @@ Pins  SPI    UNO
 * Not needed
 1 on ICPS header
 */
-
-#include <RTClib.h>                 
+            
 #include <SoftwareSerial.h>
 #include <MFRC522.h>
 #include <SPI.h>
@@ -26,7 +25,6 @@ Pins  SPI    UNO
 #define SalTr 4
 
 
-RTC_DS1307 RTC;
 MFRC522 nfc(SAD, RST);
 //CLAVE DE LA TAJETA
 byte Autorizado[TARJETA][6] = {{0x99, 0x36, 0x51, 0x35, 0xFF, 0xFF, }};
