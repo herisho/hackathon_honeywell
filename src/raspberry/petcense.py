@@ -3,9 +3,11 @@
 #Hackathon honeywell
 
 import serial
-import time
+import algo
 from datetime import datetime
 
+global fed
+fed = False
 
 def setupSerial(portName):
     return serial.Serial(port= portName, baudrate= 9600)
@@ -26,10 +28,11 @@ def checkHour(date):
     if (fed_morining_start < date < fed_morining_finish) or (fed_afternoon_start < date < fed_afternoon_finish):
         return True
     else:
+        fed = False 
         return False
 
 
-def Acceso():
+def acceso():
     data = leer_serial(puerta)
     if data == b'a/n/r':
         
@@ -38,7 +41,16 @@ def alimentacion():
     data = leer_serial(comida)
     if data == b'c/n/r':
         if checkHour():
-            escribir_serial(comida, b'y/n/r')
+            if not fed:
+                escribir_serial(comida, b'y/n/r')
+                print(var_hora())
+                fed = True
         else:
             escribir_serial(comida, b'n/n/r')
+            cont += 1
+            if cont > 10:
+                algo.send_notificacion('Alimentacion', 'Tu mascota quiere comer')
             
+def var_hora():
+    return datetime.now()
+
